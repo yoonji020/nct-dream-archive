@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>CONTENTS · NCT DREAM ARCHIVE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;500;700&display=swap"
+    rel="stylesheet">
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/css/style.css" rel="stylesheet">
+  <style>
+    :root {
+      --orange: #E8642A;
+      --dark: #1a1a1a;
+      --dark2: #222222;
+      --dark3: #2a2a2a;
+      --white: #ffffff;
+      --gray: #aaaaaa;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--dark);
+      color: var(--white);
+      font-family: 'Noto Sans KR', sans-serif;
+      cursor: none;
+      overflow-x: hidden;
+    }
+
+    #cursor {
+      width: 18px;
+      height: 18px;
+      background: var(--orange);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 99999;
+      transform: translate(-50%, -50%);
+      transition: width .2s, height .2s;
+    }
+
+    #cursor-ring {
+      width: 40px;
+      height: 40px;
+      border: 2px solid var(--orange);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 99998;
+      transform: translate(-50%, -50%);
+      transition: all .15s ease;
+      opacity: .5;
+    }
+
+    #header {
+      background: rgba(26, 26, 26, .92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(232, 100, 42, .3);
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 9000;
+      padding: 0 40px;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      color: var(--orange);
+      letter-spacing: 2px;
+      line-height: 1;
+      text-decoration: none;
+    }
+
+    .logo-text span {
+      display: block;
+      font-size: 14px;
+      color: var(--white);
+      letter-spacing: 6px;
+    }
+
+    #navbar {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    #navbar ul {
+      list-style: none;
+      display: flex;
+      gap: 60px;
+      margin: 0;
+      padding: 0;
+      align-items: center;
+    }
+
+    #navbar ul li a {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 15px;
+      letter-spacing: 3px;
+      color: rgba(255, 255, 255, .7);
+      text-decoration: none;
+      transition: color .3s;
+      position: relative;
+    }
+
+    #navbar ul li a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--orange);
+      transition: width .3s;
+    }
+
+    #navbar ul li a:hover {
+      color: var(--white);
+    }
+
+    #navbar ul li a.active {
+      color: var(--orange);
+    }
+
+    #navbar ul li a:hover::after,
+    #navbar ul li a.active::after {
+      width: 100%;
+    }
+
+    .login-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 2px solid var(--orange);
+      background: transparent;
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: none;
+      transition: all .3s;
+      font-size: 18px;
+    }
+
+    .login-btn:hover {
+      background: var(--orange);
+    }
+
+    .login-btn i {
+      display: inline-flex;
+      line-height: 1;
+    }
+
+    .login-btn i.bi-box-arrow-right {
+      transform: translate(3px, 0);
+    }
+
+    .page-wrapper {
+      padding-top: 70px;
+    }
+
+    
+    .page-header {
+      padding: 60px 80px 40px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+
+    .section-label {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 12px;
+      letter-spacing: 6px;
+      color: var(--orange);
+      margin-bottom: 12px;
+    }
+
+    .section-heading {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 56px;
+      color: var(--white);
+      letter-spacing: 4px;
+      line-height: 1;
+    }
+
+    
+    .filter-bar {
+      display: flex;
+      gap: 10px;
+      padding-bottom: 6px;
+    }
+
+    .filter-btn {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 12px;
+      letter-spacing: 2px;
+      padding: 8px 20px;
+      border: 1px solid rgba(255, 255, 255, .15);
+      background: transparent;
+      color: var(--gray);
+      cursor: none;
+      transition: all 0.3s;
+    }
+
+    .filter-btn:hover {
+      border-color: var(--orange);
+      color: var(--white);
+    }
+
+    .filter-btn.active {
+      background: var(--orange);
+      border-color: var(--orange);
+      color: var(--white);
+    }
+
+    
+    .content-grid {
+      padding: 0 80px 100px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    
+    .content-card {
+      background: var(--dark2);
+      cursor: none;
+      text-decoration: none;
+      display: block;
+      transition: transform 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .content-card:hover {
+      transform: translateY(-6px);
+    }
+
+    .content-card:hover .card-overlay {
+      opacity: 1;
+    }
+
+    .content-card:hover .card-thumb img {
+      transform: scale(1.05);
+    }
+
+    
+    .card-thumb {
+      position: relative;
+      padding-top: 56.25%;
+      
+      overflow: hidden;
+      background: var(--dark3);
+    }
+
+    .card-thumb img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+
+    .card-thumb-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--dark3), #333);
+    }
+
+    .card-thumb-placeholder i {
+      font-size: 32px;
+      color: rgba(255, 255, 255, .2);
+    }
+
+    
+    .card-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(232, 100, 42, .15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .card-overlay i {
+      font-size: 48px;
+      color: var(--white);
+      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, .5));
+    }
+
+    
+    .card-info {
+      padding: 16px;
+    }
+
+    .card-category {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--orange);
+      margin-bottom: 6px;
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--white);
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    
+    .content-card.hidden {
+      display: none;
+    }
+
+    
+    #login-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .85);
+      z-index: 99000;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+
+    #login-modal.open {
+      display: flex;
+    }
+
+    .modal-box {
+      background: var(--dark2);
+      border: 1px solid rgba(232, 100, 42, .3);
+      padding: 60px 50px;
+      width: 700px;
+      max-width: 95vw;
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 24px;
+      background: none;
+      border: none;
+      color: var(--white);
+      font-size: 24px;
+      cursor: none;
+      transition: color .3s;
+    }
+
+    .modal-close:hover {
+      color: var(--orange);
+    }
+
+    .modal-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 48px;
+      letter-spacing: 6px;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .modal-subtitle {
+      text-align: center;
+      color: var(--gray);
+      font-size: 13px;
+      letter-spacing: 2px;
+      margin-bottom: 48px;
+    }
+
+    .member-grid {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .member-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      cursor: none;
+      transition: transform .3s;
+    }
+
+    .member-card:hover {
+      transform: translateY(-6px);
+    }
+
+    .member-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      background: var(--dark3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 24px;
+      color: var(--gray);
+      transition: border-color .3s;
+    }
+
+    .member-card:hover .member-avatar,
+    .member-card.selected .member-avatar {
+      border-color: var(--orange);
+    }
+
+    .member-card.selected .member-name {
+      color: var(--orange);
+    }
+
+    .member-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 14px;
+      letter-spacing: 2px;
+      color: var(--white);
+      transition: color .3s;
+    }
+
+    .modal-confirm {
+      display: block;
+      margin: 40px auto 0;
+      background: var(--orange);
+      color: var(--white);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 16px;
+      letter-spacing: 3px;
+      padding: 14px 48px;
+      border: none;
+      cursor: none;
+      transition: background .3s;
+    }
+
+    .modal-confirm:hover {
+      background: #c9551f;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="cursor"></div>
+  <div id="cursor-ring"></div>
+
+  <header id="header">
+    <a href="index.html" class="logo-text">NCT<span>DREAM</span></a>
+    <nav id="navbar">
+      <ul>
+        <li><a href="index.html#about">ABOUT</a></li>
+        <li><a href="members.html">MEMBERS</a></li>
+        <li><a href="albums.html">ALBUMS</a></li>
+        <li><a href="contents.html" class="active">CONTENTS</a></li>
+        <li><a href="schedule.html">SCHEDULE</a></li>
+      </ul>
+    </nav>
+    <button class="login-btn" id="login-open-btn"><i class="bi bi-person"></i></button>
+  </header>
+
+  <div class="page-wrapper">
+
+    <div class="page-header">
+      <div>
+        <p class="section-label">MEDIA</p>
+        <h1 class="section-heading">CONTENTS</h1>
+      </div>
+      <div class="filter-bar">
+        <button class="filter-btn active" data-filter="all">ALL</button>
+        <button class="filter-btn" data-filter="자컨">자컨</button>
+        <button class="filter-btn" data-filter="뮤직비디오">MV</button>
+        <button class="filter-btn" data-filter="예능">예능</button>
+        <button class="filter-btn" data-filter="라이브">라이브</button>
+      </div>
+    </div>
+
+    <div class="content-grid" id="contentGrid">
+
+      
+      <a href="https://www.youtube.com/@NCTDREAM" target="_blank" class="content-card" data-category="자컨">
+        <div class="card-thumb">
+          <div class="card-thumb-placeholder"><i class="bi bi-play-circle"></i></div>
+          <div class="card-overlay"><i class="bi bi-youtube"></i></div>
+        </div>
+        <div class="card-info">
+          <p class="card-category">자컨</p>
+          <p class="card-title">NCT DREAM의 자체 제작 콘텐츠 모아보기</p>
+        </div>
+      </a>
+
+      <a href="https://youtu.be/XDnGdcgd3Pc?si=3LJoF22zzFrG1Sw5" target="_blank" class="content-card"
+        data-category="뮤직비디오">
+        <div class="card-thumb">
+          <div class="card-thumb-placeholder"><i class="bi bi-play-circle"></i></div>
+          <div class="card-overlay"><i class="bi bi-youtube"></i></div>
+        </div>
+        <div class="card-info">
+          <p class="card-category">뮤직비디오</p>
+          <p class="card-title">NCT DREAM 엔시티드림 'ISTJ' MV</p>
+        </div>
+      </a>
+
+      <a href="https://youtu.be/oZP2h3WIzqk?si=xhHGkExp3MtiNjEo" target="_blank" class="content-card"
+        data-category="뮤직비디오">
+        <div class="card-thumb">
+          <div class="card-thumb-placeholder"><i class="bi bi-play-circle"></i></div>
+          <div class="card-overlay"><i class="bi bi-youtube"></i></div>
+        </div>
+        <div class="card-info">
+          <p class="card-category">뮤직비디오</p>
+          <p class="card-title">NCT DREAM 엔시티드림 'Glitch Mode' MV</p>
+        </div>
+      </a>
+
+      <a href="https://youtu.be/PkKnp4SdE-w?si=uJyUKSYLgMVULWwk" target="_blank" class="content-card"
+        data-category="뮤직비디오">
+        <div class="card-thumb">
+          <div class="card-thumb-placeholder"><i class="bi bi-play-circle"></i></div>
+          <div class="card-overlay"><i class="bi bi-youtube"></i></div>
+        </div>
+        <div class="card-info">
+          <p class="card-category">뮤직비디오</p>
+          <p class="card-title">NCT DREAM 엔시티드림 'Hot Sauce' MV</p>
+        </div>
+      </a>
+
+      <a href="https://youtu.be/6oHCHMWsric" target="_blank" class="content-card" data-category="뮤직비디오">
+        <div class="card-thumb">
+          <div class="card-thumb-placeholder"><i class="bi bi-play-circle"></i></div>
+          <div class="card-overlay"><i class="bi bi-youtube"></i></div>
+        </div>
+        <div class="card-info">
+          <p class="card-category">뮤직비디오</p>
+          <p class="card-title">NCT DREAM 엔시티드림 'Boom' MV</p>
+        </div>
+      </a>
+
+      <a href="https://youtu.be/vjumGpkFNSc" target="_blank" class="content-card" data-category="뮤직비디오">
+        <div class="card-thumb">
+          <div class="card-thumb-placeholder"><i class="bi bi-play-circle"></i></div>
+          <div class="card-overlay"><i class="bi bi-youtube"></i></div>
+        </div>
+        <div class="card-info">
+          <p class="card-category">뮤직비디오</p>
+          <p class="card-title">NCT DREAM 엔시티드림 'Chewing Gum' MV</p>
+        </div>
+      </a>
+
+      <a href="https://www.youtube.com/@NCTDREAM" target="_blank" class="content-card" data-category="자컨">
+        <div class="card-thumb">
+          <div class="card-thumb-placeholder"><i class="bi bi-play-circle"></i></div>
+          <div class="card-overlay"><i class="bi bi-youtube"></i></div>
+        </div>
+        <div class="card-info">
+          <p class="card-category">자컨</p>
+          <p class="card-title">NCT DREAM HOUSE EP.1 — 드림하우스</p>
+        </div>
+      </a>
+
+      <a href="https://www.youtube.com/@NCTDREAM" target="_blank" class="content-card" data-category="자컨">
+        <div class="card-thumb">
+          <div class="card-thumb-placeholder"><i class="bi bi-play-circle"></i></div>
+          <div class="card-overlay"><i class="bi bi-youtube"></i></div>
+        </div>
+        <div class="card-info">
+          <p class="card-category">자컨</p>
+          <p class="card-title">NCT DREAM 'Candy' 자체제작 MV</p>
+        </div>
+      </a>
+
+      <a href="https://www.youtube.com/@NCTDREAM" target="_blank" class="content-card" data-category="예능">
+        <div class="card-thumb">
+          <div class="card-thumb-placeholder"><i class="bi bi-play-circle"></i></div>
+          <div class="card-overlay"><i class="bi bi-youtube"></i></div>
+        </div>
+        <div class="card-info">
+          <p class="card-category">예능</p>
+          <p class="card-title">런닝맨 NCT DREAM 특집</p>
+        </div>
+      </a>
+
+      <a href="https://www.youtube.com/@NCTDREAM" target="_blank" class="content-card" data-category="예능">
+        <div class="card-thumb">
+          <div class="card-thumb-placeholder"><i class="bi bi-play-circle"></i></div>
+          <div class="card-overlay"><i class="bi bi-youtube"></i></div>
+        </div>
+        <div class="card-info">
+          <p class="card-category">예능</p>
+          <p class="card-title">NCT DREAM 예능 모아보기</p>
+        </div>
+      </a>
+
+      <a href="https://www.youtube.com/@NCTDREAM" target="_blank" class="content-card" data-category="라이브">
+        <div class="card-thumb">
+          <div class="card-thumb-placeholder"><i class="bi bi-play-circle"></i></div>
+          <div class="card-overlay"><i class="bi bi-youtube"></i></div>
+        </div>
+        <div class="card-info">
+          <p class="card-category">라이브</p>
+          <p class="card-title">THE DREAM SHOW2 콘서트 하이라이트</p>
+        </div>
+      </a>
+
+      <a href="https://www.youtube.com/@NCTDREAM" target="_blank" class="content-card" data-category="라이브">
+        <div class="card-thumb">
+          <div class="card-thumb-placeholder"><i class="bi bi-play-circle"></i></div>
+          <div class="card-overlay"><i class="bi bi-youtube"></i></div>
+        </div>
+        <div class="card-info">
+          <p class="card-category">라이브</p>
+          <p class="card-title">NCT DREAM 고척돔 앵콜 라이브</p>
+        </div>
+      </a>
+
+    </div>
+  </div>
+
+  
+  <div id="login-modal">
+    <div class="modal-box">
+      <button class="modal-close" id="login-close-btn">✕</button>
+      <h2 class="modal-title">LOGIN</h2>
+      <p class="modal-subtitle">최애 멤버를 선택하세요</p>
+      <div class="member-grid">
+        <div class="member-card" data-member="renjun" onclick="selectMember(this)">
+          <div class="member-avatar">RJ</div><span class="member-name">RENJUN</span>
+        </div>
+        <div class="member-card" data-member="jeno" onclick="selectMember(this)">
+          <div class="member-avatar">JN</div><span class="member-name">JENO</span>
+        </div>
+        <div class="member-card" data-member="haechan" onclick="selectMember(this)">
+          <div class="member-avatar">HC</div><span class="member-name">HAECHAN</span>
+        </div>
+        <div class="member-card" data-member="jaemin" onclick="selectMember(this)">
+          <div class="member-avatar">JM</div><span class="member-name">JAEMIN</span>
+        </div>
+        <div class="member-card" data-member="chenle" onclick="selectMember(this)">
+          <div class="member-avatar">CL</div><span class="member-name">CHENLE</span>
+        </div>
+        <div class="member-card" data-member="jisung" onclick="selectMember(this)">
+          <div class="member-avatar">JS</div><span class="member-name">JISUNG</span>
+        </div>
+      </div>
+      <button class="modal-confirm" id="modal-confirm-btn">SELECT</button>
+    </div>
+  </div>
+
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const cursor = document.getElementById('cursor');
+    const cursorRing = document.getElementById('cursor-ring');
+    document.addEventListener('mousemove', (e) => {
+      cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px';
+      cursorRing.style.left = e.clientX + 'px'; cursorRing.style.top = e.clientY + 'px';
+    });
+    document.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        if (cursor.style.backgroundImage) {
+          cursor.style.width = '50px';
+          cursor.style.height = '50px';
+        } else {
+          cursor.style.width = '28px';
+          cursor.style.height = '28px';
+          cursorRing.style.width = '55px';
+          cursorRing.style.height = '55px';
+        }
+      });
+      el.addEventListener('mouseleave', () => {
+        if (cursor.style.backgroundImage) {
+          cursor.style.width = '40px';
+          cursor.style.height = '40px';
+        } else {
+          cursor.style.width = '18px';
+          cursor.style.height = '18px';
+          cursorRing.style.width = '40px';
+          cursorRing.style.height = '40px';
+        }
+      });
+    });
+
+    
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const cards = document.querySelectorAll('.content-card');
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const filter = btn.dataset.filter;
+        cards.forEach(card => {
+          if (filter === 'all' || card.dataset.category === filter) {
+            card.classList.remove('hidden');
+          } else {
+            card.classList.add('hidden');
+          }
+        });
+      });
+    });
+
+    const modal = document.getElementById('login-modal');
+    document.getElementById('login-open-btn').addEventListener('click', () => {
+      const saved = localStorage.getItem('ncd-member');
+      if (saved) {
+        localStorage.removeItem('ncd-member');
+        const cursor = document.getElementById('cursor');
+        const cursorRing = document.getElementById('cursor-ring');
+        if (cursor) {
+          cursor.style.backgroundImage = '';
+          cursor.style.backgroundColor = 'var(--orange)';
+          cursor.style.borderRadius = '50%';
+          cursor.style.width = '18px';
+          cursor.style.height = '18px';
+        }
+        if (cursorRing) {
+          cursorRing.style.display = 'block';
+          cursorRing.style.width = '40px';
+          cursorRing.style.height = '40px';
+        }
+        document.querySelectorAll('.member-card').forEach(c => c.classList.remove('selected'));
+        updateLoginButtonState();
+        alert('로그아웃되었습니다!');
+      } else {
+        modal.classList.add('open');
+      }
+    });
+    document.getElementById('login-close-btn').addEventListener('click', () => modal.classList.remove('open'));
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
+    let selectedMember = localStorage.getItem('ncd-member') || 'renjun';
+    function selectMember(card) {
+      document.querySelectorAll('.member-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected'); selectedMember = card.dataset.member;
+    }
+    document.getElementById('modal-confirm-btn').addEventListener('click', () => {
+      localStorage.setItem('ncd-member', selectedMember);
+      modal.classList.remove('open');
+      applyCursor(selectedMember);
+      updateLoginButtonState();
+      alert(selectedMember.toUpperCase() + ' 으로 로그인되었습니다!');
+    });
+    function applyCursor(member) {
+      if (member) {
+        const cursor = document.getElementById('cursor');
+        const cursorRing = document.getElementById('cursor-ring');
+        if (cursor) {
+          cursor.style.backgroundImage = `url('assets/img/cursor-${member}.png')`;
+          cursor.style.backgroundSize = 'contain';
+          cursor.style.backgroundPosition = 'center';
+          cursor.style.backgroundRepeat = 'no-repeat';
+          cursor.style.backgroundColor = 'transparent';
+          cursor.style.borderRadius = '0';
+          cursor.style.width = '40px';
+          cursor.style.height = '40px';
+        }
+        if (cursorRing) {
+          cursorRing.style.display = 'none';
+        }
+      }
+    }
+    function updateLoginButtonState() {
+      const loginBtn = document.getElementById('login-open-btn');
+      const saved = localStorage.getItem('ncd-member');
+      if (saved) {
+        loginBtn.innerHTML = '<i class="bi bi-box-arrow-right"></i>';
+      } else {
+        loginBtn.innerHTML = '<i class="bi bi-person"></i>';
+      }
+    }
+    const saved = localStorage.getItem('ncd-member');
+    if (saved) {
+      const card = document.querySelector('[data-member="' + saved + '"]');
+      if (card) selectMember(card);
+      applyCursor(saved);
+    }
+    updateLoginButtonState();
+  </script>
+</body>
+
+</html>

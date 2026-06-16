@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>ALBUMS · NCT DREAM ARCHIVE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/css/style.css" rel="stylesheet">
+  <style>
+    :root { --orange:#E8642A; --dark:#1a1a1a; --dark2:#222222; --dark3:#2a2a2a; --white:#ffffff; --gray:#aaaaaa; }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { background:var(--dark); color:var(--white); font-family:'Noto Sans KR',sans-serif; cursor:none; overflow-x:hidden; }
+
+    #cursor { width:18px; height:18px; background:var(--orange); border-radius:50%; position:fixed; pointer-events:none; z-index:99999; transform:translate(-50%,-50%); transition:width .2s,height .2s; }
+    #cursor-ring { width:40px; height:40px; border:2px solid var(--orange); border-radius:50%; position:fixed; pointer-events:none; z-index:99998; transform:translate(-50%,-50%); transition:all .15s ease; opacity:.5; }
+
+    
+    #header { background:rgba(26,26,26,.92); backdrop-filter:blur(10px); border-bottom:1px solid rgba(232,100,42,.3); position:fixed; top:0; width:100%; z-index:9000; padding:0 40px; height:70px; display:flex; align-items:center; justify-content:space-between; }
+    .logo-text { font-family:'Bebas Neue',sans-serif; font-size:28px; color:var(--orange); letter-spacing:2px; line-height:1; text-decoration:none; }
+    .logo-text span { display:block; font-size:14px; color:var(--white); letter-spacing:6px; }
+    #navbar { position:absolute; left:50%; transform:translateX(-50%); }
+    #navbar ul { list-style:none; display:flex; gap:60px; margin:0; padding:0; align-items:center; }
+    #navbar ul li a { font-family:'Bebas Neue',sans-serif; font-size:15px; letter-spacing:3px; color:rgba(255,255,255,.7); text-decoration:none; transition:color .3s; position:relative; }
+    #navbar ul li a::after { content:''; position:absolute; bottom:-4px; left:0; width:0; height:2px; background:var(--orange); transition:width .3s; }
+    #navbar ul li a:hover { color:var(--white); }
+    #navbar ul li a.active { color:var(--orange); }
+    #navbar ul li a:hover::after, #navbar ul li a.active::after { width:100%; }
+    .login-btn { width:38px; height:38px; border-radius:50%; border:2px solid var(--orange); background:transparent; color:var(--white); display:flex; align-items:center; justify-content:center; cursor:none; transition:all .3s; font-size:18px; }
+    .login-btn:hover { background:var(--orange); }
+    .login-btn i { display:inline-flex; line-height:1; }
+    .login-btn i.bi-box-arrow-right { transform:translate(3px,0); }
+
+    
+    .page-wrapper { padding-top:70px; }
+
+    
+    .page-title-section {
+      padding: 60px 80px 40px;
+    }
+    .section-label { font-family:'Bebas Neue',sans-serif; font-size:12px; letter-spacing:6px; color:var(--orange); margin-bottom:12px; }
+    .section-heading { font-family:'Bebas Neue',sans-serif; font-size:56px; color:var(--white); letter-spacing:4px; line-height:1; }
+
+    
+    .timeline-wrapper {
+      display: flex;
+      padding: 0 80px 50vh;
+      gap: 60px;
+    }
+
+    
+    .timeline-axis {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 40px;
+      gap: 0;
+      position: relative;
+      width: 60px;
+      flex-shrink: 0;
+    }
+
+    .timeline-line {
+      position: absolute;
+      top: 0; bottom: 0;
+      left: 50%;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--orange), rgba(232,100,42,.1));
+      transform: translateX(-50%);
+    }
+
+    
+    .album-list {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    
+    .album-item {
+      display: flex;
+      gap: 40px;
+      padding: 40px 0;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      opacity: 0.35;
+      transition: opacity 0.4s ease;
+      cursor: none;
+      position: relative;
+    }
+
+    .album-item.active {
+      opacity: 1;
+    }
+
+    
+    .album-dot {
+      width: 12px;
+      height: 12px;
+      background: var(--dark3);
+      border: 2px solid rgba(255,255,255,.2);
+      border-radius: 50%;
+      position: absolute;
+      left: -84px;
+      top: 50px;
+      transition: all 0.4s;
+      flex-shrink: 0;
+    }
+
+    .album-item.active .album-dot {
+      background: var(--orange);
+      border-color: var(--orange);
+      box-shadow: 0 0 12px rgba(232,100,42,.5);
+    }
+
+    
+    .album-year {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 13px;
+      letter-spacing: 3px;
+      color: var(--orange);
+      min-width: 70px;
+      padding-top: 8px;
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+
+    .album-item.active .album-year { opacity: 1; }
+
+    
+    .album-cover {
+      width: 120px;
+      height: 120px;
+      flex-shrink: 0;
+      background: var(--dark3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .album-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .album-cover-placeholder {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--gray);
+      text-align: center;
+      padding: 8px;
+      line-height: 1.4;
+    }
+
+    
+    .album-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .album-type {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: var(--gray);
+      margin-bottom: 8px;
+    }
+
+    .album-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 36px;
+      letter-spacing: 3px;
+      color: var(--white);
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    .album-title-kr {
+      font-size: 13px;
+      color: var(--gray);
+      margin-bottom: 16px;
+    }
+
+    .album-toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: none;
+      border: 1px solid rgba(255,255,255,.15);
+      color: var(--gray);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 12px;
+      letter-spacing: 2px;
+      padding: 8px 16px;
+      cursor: none;
+      transition: all 0.3s;
+      width: fit-content;
+    }
+
+    .album-item.active .album-toggle-btn {
+      border-color: rgba(232,100,42,.4);
+      color: var(--orange);
+    }
+
+    .album-toggle-btn:hover {
+      border-color: var(--orange);
+      color: var(--orange);
+    }
+
+    .album-toggle-btn i {
+      transition: transform 0.3s;
+      font-size: 14px;
+    }
+
+    .album-toggle-btn.open i { transform: rotate(180deg); }
+
+    
+    .tracklist {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+      margin-top: 0;
+      grid-column: 1 / -1;
+    }
+
+    .tracklist.open {
+      max-height: 800px;
+    }
+
+    .tracklist-inner {
+      padding: 24px 0 8px;
+      border-top: 1px solid rgba(232,100,42,.2);
+      margin-top: 24px;
+    }
+
+    .track-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255,255,255,.04);
+    }
+
+    .track-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 13px;
+      color: var(--gray);
+      min-width: 24px;
+      text-align: right;
+    }
+
+    .track-cover {
+      width: 36px;
+      height: 36px;
+      background: var(--dark3);
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .track-cover img { width:100%; height:100%; object-fit:cover; }
+
+    .track-title {
+      flex: 1;
+      font-size: 14px;
+      color: var(--white);
+    }
+
+    .track-title .title-badge {
+      font-size: 10px;
+      background: var(--orange);
+      color: var(--white);
+      padding: 2px 6px;
+      margin-left: 8px;
+      letter-spacing: 1px;
+      font-family: 'Bebas Neue', sans-serif;
+      vertical-align: middle;
+    }
+
+    .track-links {
+      display: flex;
+      gap: 10px;
+    }
+
+    .track-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      text-decoration: none;
+      font-size: 14px;
+      transition: transform 0.2s;
+    }
+
+    .track-link:hover { transform: scale(1.2); }
+    .track-link.yt { background:#FF0000; color:#fff; }
+    .track-link.mel { background:#00CD3C; color:#fff; }
+    .track-link.sp { background:#1DB954; color:#fff; }
+
+    
+    .album-item-inner {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    .album-item-inner .album-info { min-width: 300px; }
+
+    
+    #login-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.85); z-index:99000; align-items:center; justify-content:center; backdrop-filter:blur(4px); }
+    #login-modal.open { display:flex; }
+    .modal-box { background:var(--dark2); border:1px solid rgba(232,100,42,.3); padding:60px 50px; width:700px; max-width:95vw; position:relative; }
+    .modal-close { position:absolute; top:20px; right:24px; background:none; border:none; color:var(--white); font-size:24px; cursor:none; transition:color .3s; }
+    .modal-close:hover { color:var(--orange); }
+    .modal-title { font-family:'Bebas Neue',sans-serif; font-size:48px; letter-spacing:6px; text-align:center; margin-bottom:8px; }
+    .modal-subtitle { text-align:center; color:var(--gray); font-size:13px; letter-spacing:2px; margin-bottom:48px; }
+    .member-grid { display:flex; justify-content:center; gap:20px; flex-wrap:wrap; }
+    .member-card { display:flex; flex-direction:column; align-items:center; gap:10px; cursor:none; transition:transform .3s; }
+    .member-card:hover { transform:translateY(-6px); }
+    .member-avatar { width:80px; height:80px; border-radius:50%; border:3px solid transparent; background:var(--dark3); display:flex; align-items:center; justify-content:center; font-family:'Bebas Neue',sans-serif; font-size:24px; color:var(--gray); transition:border-color .3s; }
+    .member-card:hover .member-avatar, .member-card.selected .member-avatar { border-color:var(--orange); }
+    .member-card.selected .member-name { color:var(--orange); }
+    .member-name { font-family:'Bebas Neue',sans-serif; font-size:14px; letter-spacing:2px; color:var(--white); transition:color .3s; }
+    .modal-confirm { display:block; margin:40px auto 0; background:var(--orange); color:var(--white); font-family:'Bebas Neue',sans-serif; font-size:16px; letter-spacing:3px; padding:14px 48px; border:none; cursor:none; transition:background .3s; }
+    .modal-confirm:hover { background:#c9551f; }
+  </style>
+</head>
+<body>
+  <div id="cursor"></div>
+  <div id="cursor-ring"></div>
+
+  <header id="header">
+    <a href="index.html" class="logo-text">NCT<span>DREAM</span></a>
+    <nav id="navbar">
+      <ul>
+        <li><a href="index.html#about">ABOUT</a></li>
+        <li><a href="members.html">MEMBERS</a></li>
+        <li><a href="albums.html" class="active">ALBUMS</a></li>
+        <li><a href="contents.html">CONTENTS</a></li>
+        <li><a href="schedule.html">SCHEDULE</a></li>
+      </ul>
+    </nav>
+    <button class="login-btn" id="login-open-btn"><i class="bi bi-person"></i></button>
+  </header>
+
+  <div class="page-wrapper">
+    <div class="page-title-section">
+      <p class="section-label">DISCOGRAPHY</p>
+      <h1 class="section-heading">ALBUMS</h1>
+    </div>
+
+    <div class="timeline-wrapper">
+      
+      <div class="timeline-axis">
+        <div class="timeline-line"></div>
+      </div>
+
+      
+      <div class="album-list" id="albumList">
+
+        
+        <div class="album-item active" data-index="0">
+          <div class="album-dot"></div>
+          <div class="album-item-inner">
+            <span class="album-year">2025.10</span>
+            <div class="album-cover">
+              <img src="assets/img/albums/beat-it-up.jpg" alt="BEAT IT UP">
+            </div>
+            <div class="album-info">
+              <span class="album-type">MINI ALBUM</span>
+              <h2 class="album-title">BEAT IT UP</h2>
+              <p class="album-title-kr">비트 잇 업</p>
+              <button class="album-toggle-btn" data-index="0">
+                <span>수록곡 보기</span>
+                <i class="bi bi-chevron-down"></i>
+              </button>
+            </div>
+            <div class="tracklist" id="tracklist-0">
+              <div class="tracklist-inner">
+                <div class="track-item">
+                  <span class="track-num">01</span>
+                  <div class="track-cover"><img src="assets/img/albums/beat-it-up.jpg" alt="BEAT IT UP"></div>
+                  <span class="track-title">BEAT IT UP <span class="title-badge">TITLE</span></span>
+                  <div class="track-links">
+                    <a href="https://youtu.be/" target="_blank" class="track-link yt"><i class="bi bi-youtube"></i></a>
+                    <a href="https://www.melon.com/" target="_blank" class="track-link mel"><i class="bi bi-music-note"></i></a>
+                    <a href="https://open.spotify.com/" target="_blank" class="track-link sp"><i class="bi bi-spotify"></i></a>
+                  </div>
+                </div>
+                <div class="track-item">
+                  <span class="track-num">02</span>
+                  <div class="track-cover"><img src="assets/img/albums/beat-it-up.jpg" alt="BEAT IT UP"></div>
+                  <span class="track-title">RUSH</span>
+                  <div class="track-links">
+                    <a href="https://youtu.be/" target="_blank" class="track-link yt"><i class="bi bi-youtube"></i></a>
+                    <a href="https://www.melon.com/" target="_blank" class="track-link mel"><i class="bi bi-music-note"></i></a>
+                    <a href="https://open.spotify.com/" target="_blank" class="track-link sp"><i class="bi bi-spotify"></i></a>
+                  </div>
+                </div>
+                <div class="track-item">
+                  <span class="track-num">03</span>
+                  <div class="track-cover"><img src="assets/img/albums/beat-it-up.jpg" alt="BEAT IT UP"></div>
+                  <span class="track-title">COLD COFFEE</span>
+                  <div class="track-links">
+                    <a href="https://youtu.be/" target="_blank" class="track-link yt"><i class="bi bi-youtube"></i></a>
+                    <a href="https://www.melon.com/" target="_blank" class="track-link mel"><i class="bi bi-music-note"></i></a>
+                    <a href="https://open.spotify.com/" target="_blank" class="track-link sp"><i class="bi bi-spotify"></i></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="album-item" data-index="1">
+          <div class="album-dot"></div>
+          <div class="album-item-inner">
+            <span class="album-year">2023.07</span>
+            <div class="album-cover">
+              <img src="assets/img/albums/istj.jpg" alt="ISTJ">
+            </div>
+            <div class="album-info">
+              <span class="album-type">STUDIO ALBUM 3</span>
+              <h2 class="album-title">ISTJ</h2>
+              <p class="album-title-kr">아이에스티제이</p>
+              <button class="album-toggle-btn" data-index="1">
+                <span>수록곡 보기</span>
+                <i class="bi bi-chevron-down"></i>
+              </button>
+            </div>
+            <div class="tracklist" id="tracklist-1">
+              <div class="tracklist-inner">
+                <div class="track-item">
+                  <span class="track-num">01</span>
+                  <div class="track-cover"><img src="assets/img/albums/istj.jpg" alt="ISTJ"></div>
+                  <span class="track-title">ISTJ <span class="title-badge">TITLE</span></span>
+                  <div class="track-links">
+                    <a href="https://youtu.be/n3qPSFQ4Ynk" target="_blank" class="track-link yt"><i class="bi bi-youtube"></i></a>
+                    <a href="https://www.melon.com/" target="_blank" class="track-link mel"><i class="bi bi-music-note"></i></a>
+                    <a href="https://open.spotify.com/" target="_blank" class="track-link sp"><i class="bi bi-spotify"></i></a>
+                  </div>
+                </div>
+                <div class="track-item">
+                  <span class="track-num">02</span>
+                  <div class="track-cover"><img src="assets/img/albums/istj.jpg" alt="ISTJ"></div>
+                  <span class="track-title">Broken Melodies</span>
+                  <div class="track-links">
+                    <a href="https://youtu.be/" target="_blank" class="track-link yt"><i class="bi bi-youtube"></i></a>
+                    <a href="https://www.melon.com/" target="_blank" class="track-link mel"><i class="bi bi-music-note"></i></a>
+                    <a href="https://open.spotify.com/" target="_blank" class="track-link sp"><i class="bi bi-spotify"></i></a>
+                  </div>
+                </div>
+                <div class="track-item">
+                  <span class="track-num">03</span>
+                  <div class="track-cover"><img src="assets/img/albums/istj.jpg" alt="ISTJ"></div>
+                  <span class="track-title">Like We Just Met</span>
+                  <div class="track-links">
+                    <a href="https://youtu.be/" target="_blank" class="track-link yt"><i class="bi bi-youtube"></i></a>
+                    <a href="https://www.melon.com/" target="_blank" class="track-link mel"><i class="bi bi-music-note"></i></a>
+                    <a href="https://open.spotify.com/" target="_blank" class="track-link sp"><i class="bi bi-spotify"></i></a>
+                  </div>
+                </div>
+                <div class="track-item">
+                  <span class="track-num">04</span>
+                  <div class="track-cover"><img src="assets/img/albums/istj.jpg" alt="ISTJ"></div>
+                  <span class="track-title">Pretzel</span>
+                  <div class="track-links">
+                    <a href="https://youtu.be/" target="_blank" class="track-link yt"><i class="bi bi-youtube"></i></a>
+                    <a href="https://www.melon.com/" target="_blank" class="track-link mel"><i class="bi bi-music-note"></i></a>
+                    <a href="https://open.spotify.com/" target="_blank" class="track-link sp"><i class="bi bi-spotify"></i></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="album-item" data-index="2">
+          <div class="album-dot"></div>
+          <div class="album-item-inner">
+            <span class="album-year">2022.03</span>
+            <div class="album-cover">
+              <img src="assets/img/albums/glitch-mode.jpg" alt="GLITCH MODE">
+            </div>
+            <div class="album-info">
+              <span class="album-type">STUDIO ALBUM 2</span>
+              <h2 class="album-title">GLITCH MODE</h2>
+              <p class="album-title-kr">글리치 모드</p>
+              <button class="album-toggle-btn" data-index="2">
+                <span>수록곡 보기</span>
+                <i class="bi bi-chevron-down"></i>
+              </button>
+            </div>
+            <div class="tracklist" id="tracklist-2">
+              <div class="tracklist-inner">
+                <div class="track-item">
+                  <span class="track-num">01</span>
+                  <div class="track-cover"><img src="assets/img/albums/glitch-mode.jpg" alt="GLITCH MODE"></div>
+                  <span class="track-title">Glitch Mode <span class="title-badge">TITLE</span></span>
+                  <div class="track-links">
+                    <a href="https://youtu.be/3FwKbFfnKyQ" target="_blank" class="track-link yt"><i class="bi bi-youtube"></i></a>
+                    <a href="https://www.melon.com/" target="_blank" class="track-link mel"><i class="bi bi-music-note"></i></a>
+                    <a href="https://open.spotify.com/" target="_blank" class="track-link sp"><i class="bi bi-spotify"></i></a>
+                  </div>
+                </div>
+                <div class="track-item">
+                  <span class="track-num">02</span>
+                  <div class="track-cover"><img src="assets/img/albums/glitch-mode.jpg" alt="GLITCH MODE"></div>
+                  <span class="track-title">Beatbox</span>
+                  <div class="track-links">
+                    <a href="https://youtu.be/" target="_blank" class="track-link yt"><i class="bi bi-youtube"></i></a>
+                    <a href="https://www.melon.com/" target="_blank" class="track-link mel"><i class="bi bi-music-note"></i></a>
+                    <a href="https://open.spotify.com/" target="_blank" class="track-link sp"><i class="bi bi-spotify"></i></a>
+                  </div>
+                </div>
+                <div class="track-item">
+                  <span class="track-num">03</span>
+                  <div class="track-cover"><img src="assets/img/albums/glitch-mode.jpg" alt="GLITCH MODE"></div>
+                  <span class="track-title">ANL</span>
+                  <div class="track-links">
+                    <a href="https://youtu.be/" target="_blank" class="track-link yt"><i class="bi bi-youtube"></i></a>
+                    <a href="https://www.melon.com/" target="_blank" class="track-link mel"><i class="bi bi-music-note"></i></a>
+                    <a href="https://open.spotify.com/" target="_blank" class="track-link sp"><i class="bi bi-spotify"></i></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="album-item" data-index="3">
+          <div class="album-dot"></div>
+          <div class="album-item-inner">
+            <span class="album-year">2021.05</span>
+            <div class="album-cover">
+              <img src="assets/img/albums/hot-sauce.jpg" alt="HOT SAUCE">
+            </div>
+            <div class="album-info">
+              <span class="album-type">STUDIO ALBUM 1</span>
+              <h2 class="album-title">HOT SAUCE</h2>
+              <p class="album-title-kr">핫소스</p>
+              <button class="album-toggle-btn" data-index="3">
+                <span>수록곡 보기</span>
+                <i class="bi bi-chevron-down"></i>
+              </button>
+            </div>
+            <div class="tracklist" id="tracklist-3">
+              <div class="tracklist-inner">
+                <div class="track-item">
+                  <span class="track-num">01</span>
+                  <div class="track-cover"><img src="assets/img/albums/hot-sauce.jpg" alt="HOT SAUCE"></div>
+                  <span class="track-title">Hot Sauce <span class="title-badge">TITLE</span></span>
+                  <div class="track-links">
+                    <a href="https://youtu.be/rFzjMeAsNsg" target="_blank" class="track-link yt"><i class="bi bi-youtube"></i></a>
+                    <a href="https://www.melon.com/" target="_blank" class="track-link mel"><i class="bi bi-music-note"></i></a>
+                    <a href="https://open.spotify.com/" target="_blank" class="track-link sp"><i class="bi bi-spotify"></i></a>
+                  </div>
+                </div>
+                <div class="track-item">
+                  <span class="track-num">02</span>
+                  <div class="track-cover"><img src="assets/img/albums/hot-sauce.jpg" alt="HOT SAUCE"></div>
+                  <span class="track-title">맛 (Beautiful Life)</span>
+                  <div class="track-links">
+                    <a href="https://youtu.be/" target="_blank" class="track-link yt"><i class="bi bi-youtube"></i></a>
+                    <a href="https://www.melon.com/" target="_blank" class="track-link mel"><i class="bi bi-music-note"></i></a>
+                    <a href="https://open.spotify.com/" target="_blank" class="track-link sp"><i class="bi bi-spotify"></i></a>
+                  </div>
+                </div>
+                <div class="track-item">
+                  <span class="track-num">03</span>
+                  <div class="track-cover"><img src="assets/img/albums/hot-sauce.jpg" alt="HOT SAUCE"></div>
+                  <span class="track-title">Dive Into You</span>
+                  <div class="track-links">
+                    <a href="https://youtu.be/" target="_blank" class="track-link yt"><i class="bi bi-youtube"></i></a>
+                    <a href="https://www.melon.com/" target="_blank" class="track-link mel"><i class="bi bi-music-note"></i></a>
+                    <a href="https://open.spotify.com/" target="_blank" class="track-link sp"><i class="bi bi-spotify"></i></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="album-item" data-index="4">
+          <div class="album-dot"></div>
+          <div class="album-item-inner">
+            <span class="album-year">2019.08</span>
+            <div class="album-cover">
+              <img src="assets/img/albums/we-boom.jpg" alt="WE BOOM">
+            </div>
+            <div class="album-info">
+              <span class="album-type">MINI ALBUM 3</span>
+              <h2 class="album-title">WE BOOM</h2>
+              <p class="album-title-kr">위 붐</p>
+              <button class="album-toggle-btn" data-index="4">
+                <span>수록곡 보기</span>
+                <i class="bi bi-chevron-down"></i>
+              </button>
+            </div>
+            <div class="tracklist" id="tracklist-4">
+              <div class="tracklist-inner">
+                <div class="track-item">
+                  <span class="track-num">01</span>
+                  <div class="track-cover"><img src="assets/img/albums/we-boom.jpg" alt="WE BOOM"></div>
+                  <span class="track-title">Boom <span class="title-badge">TITLE</span></span>
+                  <div class="track-links">
+                    <a href="https://youtu.be/6oHCHMWsric" target="_blank" class="track-link yt"><i class="bi bi-youtube"></i></a>
+                    <a href="https://www.melon.com/" target="_blank" class="track-link mel"><i class="bi bi-music-note"></i></a>
+                    <a href="https://open.spotify.com/" target="_blank" class="track-link sp"><i class="bi bi-spotify"></i></a>
+                  </div>
+                </div>
+                <div class="track-item">
+                  <span class="track-num">02</span>
+                  <div class="track-cover"><img src="assets/img/albums/we-boom.jpg" alt="WE BOOM"></div>
+                  <span class="track-title">Déjà Vu</span>
+                  <div class="track-links">
+                    <a href="https://youtu.be/" target="_blank" class="track-link yt"><i class="bi bi-youtube"></i></a>
+                    <a href="https://www.melon.com/" target="_blank" class="track-link mel"><i class="bi bi-music-note"></i></a>
+                    <a href="https://open.spotify.com/" target="_blank" class="track-link sp"><i class="bi bi-spotify"></i></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="album-item" data-index="5">
+          <div class="album-dot"></div>
+          <div class="album-item-inner">
+            <span class="album-year">2016.08</span>
+            <div class="album-cover">
+              <img src="assets/img/albums/chewing-gum.jpg" alt="CHEWING GUM">
+            </div>
+            <div class="album-info">
+              <span class="album-type">DIGITAL SINGLE</span>
+              <h2 class="album-title">CHEWING GUM</h2>
+              <p class="album-title-kr">추잉껌 (데뷔 싱글)</p>
+              <button class="album-toggle-btn" data-index="5">
+                <span>수록곡 보기</span>
+                <i class="bi bi-chevron-down"></i>
+              </button>
+            </div>
+            <div class="tracklist" id="tracklist-5">
+              <div class="tracklist-inner">
+                <div class="track-item">
+                  <span class="track-num">01</span>
+                  <div class="track-cover"><img src="assets/img/albums/chewing-gum.jpg" alt="CHEWING GUM"></div>
+                  <span class="track-title">Chewing Gum <span class="title-badge">TITLE</span></span>
+                  <div class="track-links">
+                    <a href="https://youtu.be/vjumGpkFNSc" target="_blank" class="track-link yt"><i class="bi bi-youtube"></i></a>
+                    <a href="https://www.melon.com/" target="_blank" class="track-link mel"><i class="bi bi-music-note"></i></a>
+                    <a href="https://open.spotify.com/" target="_blank" class="track-link sp"><i class="bi bi-spotify"></i></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  
+  <div id="login-modal">
+    <div class="modal-box">
+      <button class="modal-close" id="login-close-btn">✕</button>
+      <h2 class="modal-title">LOGIN</h2>
+      <p class="modal-subtitle">최애 멤버를 선택하세요</p>
+      <div class="member-grid">
+        <div class="member-card" data-member="renjun" onclick="selectMember(this)"><div class="member-avatar">RJ</div><span class="member-name">RENJUN</span></div>
+        <div class="member-card" data-member="jeno" onclick="selectMember(this)"><div class="member-avatar">JN</div><span class="member-name">JENO</span></div>
+        <div class="member-card" data-member="haechan" onclick="selectMember(this)"><div class="member-avatar">HC</div><span class="member-name">HAECHAN</span></div>
+        <div class="member-card" data-member="jaemin" onclick="selectMember(this)"><div class="member-avatar">JM</div><span class="member-name">JAEMIN</span></div>
+        <div class="member-card" data-member="chenle" onclick="selectMember(this)"><div class="member-avatar">CL</div><span class="member-name">CHENLE</span></div>
+        <div class="member-card" data-member="jisung" onclick="selectMember(this)"><div class="member-avatar">JS</div><span class="member-name">JISUNG</span></div>
+      </div>
+      <button class="modal-confirm" id="modal-confirm-btn">SELECT</button>
+    </div>
+  </div>
+
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const cursor = document.getElementById('cursor');
+    const cursorRing = document.getElementById('cursor-ring');
+    document.addEventListener('mousemove', (e) => {
+      cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px';
+      cursorRing.style.left = e.clientX + 'px'; cursorRing.style.top = e.clientY + 'px';
+    });
+    document.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        if (cursor.style.backgroundImage) {
+          cursor.style.width = '50px';
+          cursor.style.height = '50px';
+        } else {
+          cursor.style.width = '28px';
+          cursor.style.height = '28px';
+          cursorRing.style.width = '55px';
+          cursorRing.style.height = '55px';
+        }
+      });
+      el.addEventListener('mouseleave', () => {
+        if (cursor.style.backgroundImage) {
+          cursor.style.width = '40px';
+          cursor.style.height = '40px';
+        } else {
+          cursor.style.width = '18px';
+          cursor.style.height = '18px';
+          cursorRing.style.width = '40px';
+          cursorRing.style.height = '40px';
+        }
+      });
+    });
+
+    
+    const albumItems = document.querySelectorAll('.album-item');
+
+    function updateActiveAlbum() {
+      const centerY = window.innerHeight / 2;
+      let closestItem = null;
+      let closestDist = Infinity;
+
+      albumItems.forEach(item => {
+        const rect = item.getBoundingClientRect();
+        const itemCenterY = rect.top + rect.height / 2;
+        const dist = Math.abs(itemCenterY - centerY);
+        if (dist < closestDist) {
+          closestDist = dist;
+          closestItem = item;
+        }
+      });
+
+      albumItems.forEach(item => item.classList.remove('active'));
+      if (closestItem) closestItem.classList.add('active');
+    }
+
+    
+    window.addEventListener('scroll', updateActiveAlbum);
+    window.addEventListener('resize', updateActiveAlbum);
+    updateActiveAlbum();
+
+    
+    document.querySelectorAll('.album-toggle-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const idx = btn.dataset.index;
+        const tracklist = document.getElementById('tracklist-' + idx);
+        const isOpen = tracklist.classList.contains('open');
+        
+        document.querySelectorAll('.tracklist').forEach(t => t.classList.remove('open'));
+        document.querySelectorAll('.album-toggle-btn').forEach(b => {
+          b.classList.remove('open');
+          b.querySelector('span').textContent = '수록곡 보기';
+        });
+        
+        if (!isOpen) {
+          tracklist.classList.add('open');
+          btn.classList.add('open');
+          btn.querySelector('span').textContent = '수록곡 접기';
+        }
+      });
+    });
+
+    const modal = document.getElementById('login-modal');
+    document.getElementById('login-open-btn').addEventListener('click', () => {
+      const saved = localStorage.getItem('ncd-member');
+      if (saved) {
+        localStorage.removeItem('ncd-member');
+        const cursor = document.getElementById('cursor');
+        const cursorRing = document.getElementById('cursor-ring');
+        if (cursor) {
+          cursor.style.backgroundImage = '';
+          cursor.style.backgroundColor = 'var(--orange)';
+          cursor.style.borderRadius = '50%';
+          cursor.style.width = '18px';
+          cursor.style.height = '18px';
+        }
+        if (cursorRing) {
+          cursorRing.style.display = 'block';
+          cursorRing.style.width = '40px';
+          cursorRing.style.height = '40px';
+        }
+        document.querySelectorAll('.member-card').forEach(c => c.classList.remove('selected'));
+        updateLoginButtonState();
+        alert('로그아웃되었습니다!');
+      } else {
+        modal.classList.add('open');
+      }
+    });
+    document.getElementById('login-close-btn').addEventListener('click', () => modal.classList.remove('open'));
+    modal.addEventListener('click', (e) => { if(e.target===modal) modal.classList.remove('open'); });
+    let selectedMember = localStorage.getItem('ncd-member') || 'renjun';
+    function selectMember(card) {
+      document.querySelectorAll('.member-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected'); selectedMember = card.dataset.member;
+    }
+    document.getElementById('modal-confirm-btn').addEventListener('click', () => {
+      localStorage.setItem('ncd-member', selectedMember);
+      modal.classList.remove('open');
+      applyCursor(selectedMember);
+      updateLoginButtonState();
+      alert(selectedMember.toUpperCase() + ' 으로 로그인되었습니다!');
+    });
+    function applyCursor(member) {
+      if (member) {
+        const cursor = document.getElementById('cursor');
+        const cursorRing = document.getElementById('cursor-ring');
+        if (cursor) {
+          cursor.style.backgroundImage = `url('assets/img/cursor-${member}.png')`;
+          cursor.style.backgroundSize = 'contain';
+          cursor.style.backgroundPosition = 'center';
+          cursor.style.backgroundRepeat = 'no-repeat';
+          cursor.style.backgroundColor = 'transparent';
+          cursor.style.borderRadius = '0';
+          cursor.style.width = '40px';
+          cursor.style.height = '40px';
+        }
+        if (cursorRing) {
+          cursorRing.style.display = 'none';
+        }
+      }
+    }
+    function updateLoginButtonState() {
+      const loginBtn = document.getElementById('login-open-btn');
+      const saved = localStorage.getItem('ncd-member');
+      if (saved) {
+        loginBtn.innerHTML = '<i class="bi bi-box-arrow-right"></i>';
+      } else {
+        loginBtn.innerHTML = '<i class="bi bi-person"></i>';
+      }
+    }
+    const saved = localStorage.getItem('ncd-member');
+    if(saved) {
+      const card = document.querySelector('[data-member="'+saved+'"]');
+      if(card) selectMember(card);
+      applyCursor(saved);
+    }
+    updateLoginButtonState();
+  </script>
+</body>
+</html>

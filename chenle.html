@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>CHENLE · NCT DREAM ARCHIVE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;500;700&display=swap"
+    rel="stylesheet">
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/css/style.css" rel="stylesheet">
+  <style>
+    :root {
+      --orange: #E8642A;
+      --dark: #1a1a1a;
+      --dark2: #222222;
+      --dark3: #2a2a2a;
+      --white: #ffffff;
+      --gray: #aaaaaa;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--dark);
+      color: var(--white);
+      font-family: 'Noto Sans KR', sans-serif;
+      cursor: none;
+      overflow-x: hidden;
+    }
+
+    #cursor {
+      width: 18px;
+      height: 18px;
+      background: var(--orange);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 99999;
+      transform: translate(-50%, -50%);
+      transition: width .2s, height .2s;
+    }
+
+    #cursor-ring {
+      width: 40px;
+      height: 40px;
+      border: 2px solid var(--orange);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 99998;
+      transform: translate(-50%, -50%);
+      transition: all .15s ease;
+      opacity: .5;
+    }
+
+    #header {
+      background: rgba(26, 26, 26, .92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(232, 100, 42, .3);
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 9000;
+      padding: 0 40px;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      color: var(--orange);
+      letter-spacing: 2px;
+      line-height: 1;
+      text-decoration: none;
+    }
+
+    .logo-text span {
+      display: block;
+      font-size: 14px;
+      color: var(--white);
+      letter-spacing: 6px;
+    }
+
+    #navbar {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    #navbar ul {
+      list-style: none;
+      display: flex;
+      gap: 60px;
+      margin: 0;
+      padding: 0;
+      align-items: center;
+    }
+
+    #navbar ul li a {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 15px;
+      letter-spacing: 3px;
+      color: rgba(255, 255, 255, .7);
+      text-decoration: none;
+      transition: color .3s;
+      position: relative;
+    }
+
+    #navbar ul li a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--orange);
+      transition: width .3s;
+    }
+
+    #navbar ul li a:hover {
+      color: var(--white);
+    }
+
+    #navbar ul li a.active {
+      color: var(--orange);
+    }
+
+    #navbar ul li a:hover::after,
+    #navbar ul li a.active::after {
+      width: 100%;
+    }
+
+    .login-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 2px solid var(--orange);
+      background: transparent;
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: none;
+      transition: all .3s;
+      font-size: 18px;
+    }
+
+    .login-btn:hover {
+      background: var(--orange);
+    }
+
+    .login-btn i {
+      display: inline-flex;
+      line-height: 1;
+    }
+
+    .login-btn i.bi-box-arrow-right {
+      transform: translate(3px, 0);
+    }
+
+    .page-wrapper {
+      display: flex;
+      padding-top: 70px;
+      min-height: 100vh;
+    }
+
+    .member-sidenav {
+      width: 80px;
+      background: transparent;
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      z-index: 100;
+    }
+
+    .member-nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: none;
+      text-decoration: none;
+      position: relative;
+    }
+
+    .member-nav-avatar {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, .15);
+      background: rgba(255, 255, 255, .08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 13px;
+      color: var(--gray);
+      transition: all .3s;
+      overflow: hidden;
+      backdrop-filter: blur(4px);
+    }
+
+    .member-nav-item:hover .member-nav-avatar {
+      border-color: var(--orange);
+      background: rgba(232, 100, 42, .15);
+      color: var(--white);
+      transform: scale(1.1);
+    }
+
+    .member-nav-item.active .member-nav-avatar {
+      border-color: var(--orange);
+      background: var(--orange);
+      color: var(--white);
+    }
+
+    .member-nav-item::after {
+      content: attr(data-label);
+      position: absolute;
+      left: 60px;
+      background: rgba(26, 26, 26, .9);
+      color: var(--white);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 12px;
+      letter-spacing: 2px;
+      padding: 6px 12px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s;
+      border-left: 2px solid var(--orange);
+    }
+
+    .member-nav-item:hover::after {
+      opacity: 1;
+    }
+
+    .member-content {
+      margin-left: 80px;
+      flex: 1;
+      min-height: calc(100vh - 70px);
+    }
+
+    .member-hero {
+      position: relative;
+      height: 420px;
+      overflow: hidden;
+      background: var(--dark2);
+    }
+
+    .member-hero-bg {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, rgba(26, 26, 26, .9) 40%, rgba(26, 26, 26, .3) 100%);
+      z-index: 1;
+    }
+
+    .member-hero-fallback {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 70% 50%, rgba(232, 100, 42, .12) 0%, transparent 70%);
+    }
+
+    .member-hero-info {
+      position: relative;
+      z-index: 2;
+      padding: 60px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .member-tag {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 12px;
+      letter-spacing: 4px;
+      color: var(--orange);
+      margin-bottom: 8px;
+    }
+
+    .member-name-big {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 80px;
+      line-height: .9;
+      color: var(--white);
+      letter-spacing: 4px;
+      margin-bottom: 16px;
+    }
+
+    .member-name-kr {
+      font-size: 18px;
+      color: var(--gray);
+      letter-spacing: 4px;
+    }
+
+    .member-detail {
+      padding: 60px;
+    }
+
+    .profile-grid {
+      max-width: 600px;
+      margin-bottom: 60px;
+    }
+
+    .section-label {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 12px;
+      letter-spacing: 6px;
+      color: var(--orange);
+      margin-bottom: 24px;
+    }
+
+    .profile-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .profile-table tr {
+      border-bottom: 1px solid rgba(255, 255, 255, .06);
+    }
+
+    .profile-table td {
+      padding: 14px 0;
+      font-size: 14px;
+    }
+
+    .profile-table td:first-child {
+      color: var(--gray);
+      width: 100px;
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+
+    .profile-table td:last-child {
+      color: var(--white);
+    }
+
+    .member-desc {
+      color: var(--gray);
+      font-size: 14px;
+      line-height: 2;
+    }
+
+    .history-section {
+      margin-bottom: 60px;
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .history-item {
+      display: flex;
+      gap: 32px;
+      padding: 20px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, .06);
+      align-items: flex-start;
+    }
+
+    .history-year {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 13px;
+      letter-spacing: 2px;
+      color: var(--orange);
+      min-width: 50px;
+      padding-top: 2px;
+    }
+
+    .history-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+
+    .history-desc {
+      font-size: 13px;
+      color: var(--gray);
+      line-height: 1.7;
+    }
+
+    .sns-links {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .sns-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--dark2);
+      border: 1px solid rgba(255, 255, 255, .06);
+      padding: 14px 24px;
+      color: var(--white);
+      text-decoration: none;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 14px;
+      letter-spacing: 2px;
+      transition: all .3s;
+    }
+
+    .sns-link:hover {
+      border-color: var(--orange);
+      color: var(--orange);
+    }
+
+    .sns-link i {
+      font-size: 18px;
+    }
+
+    .section-divider {
+      border: none;
+      border-top: 1px solid rgba(255, 255, 255, .06);
+      margin: 48px 0;
+    }
+
+    #login-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .85);
+      z-index: 99000;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+
+    #login-modal.open {
+      display: flex;
+    }
+
+    .modal-box {
+      background: var(--dark2);
+      border: 1px solid rgba(232, 100, 42, .3);
+      padding: 60px 50px;
+      width: 700px;
+      max-width: 95vw;
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 24px;
+      background: none;
+      border: none;
+      color: var(--white);
+      font-size: 24px;
+      cursor: none;
+      transition: color .3s;
+    }
+
+    .modal-close:hover {
+      color: var(--orange);
+    }
+
+    .modal-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 48px;
+      letter-spacing: 6px;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .modal-subtitle {
+      text-align: center;
+      color: var(--gray);
+      font-size: 13px;
+      letter-spacing: 2px;
+      margin-bottom: 48px;
+    }
+
+    .member-grid {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .member-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      cursor: none;
+      transition: transform .3s;
+    }
+
+    .member-card:hover {
+      transform: translateY(-6px);
+    }
+
+    .member-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      background: var(--dark3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 24px;
+      color: var(--gray);
+      transition: border-color .3s;
+    }
+
+    .member-card:hover .member-avatar,
+    .member-card.selected .member-avatar {
+      border-color: var(--orange);
+    }
+
+    .member-card.selected .member-name {
+      color: var(--orange);
+    }
+
+    .member-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 14px;
+      letter-spacing: 2px;
+      color: var(--white);
+      transition: color .3s;
+    }
+
+    .modal-confirm {
+      display: block;
+      margin: 40px auto 0;
+      background: var(--orange);
+      color: var(--white);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 16px;
+      letter-spacing: 3px;
+      padding: 14px 48px;
+      border: none;
+      cursor: none;
+      transition: background .3s;
+    }
+
+    .modal-confirm:hover {
+      background: #c9551f;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="cursor"></div>
+  <div id="cursor-ring"></div>
+
+  <header id="header">
+    <a href="index.html" class="logo-text">NCT<span>DREAM</span></a>
+    <nav id="navbar">
+      <ul>
+        <li><a href="index.html#about">ABOUT</a></li>
+        <li><a href="members.html" class="active">MEMBERS</a></li>
+        <li><a href="albums.html">ALBUMS</a></li>
+        <li><a href="contents.html">CONTENTS</a></li>
+        <li><a href="schedule.html">SCHEDULE</a></li>
+      </ul>
+    </nav>
+    <button class="login-btn" id="login-open-btn"><i class="bi bi-person"></i></button>
+  </header>
+
+  <div class="page-wrapper">
+    <nav class="member-sidenav">
+      <a href="renjun.html" class="member-nav-item" data-member="renjun" data-label="RENJUN">
+        <div class="member-nav-avatar">RJ</div>
+      </a>
+      <a href="jeno.html" class="member-nav-item" data-member="jeno" data-label="JENO">
+        <div class="member-nav-avatar">JN</div>
+      </a>
+      <a href="haechan.html" class="member-nav-item" data-member="haechan" data-label="HAECHAN">
+        <div class="member-nav-avatar">HC</div>
+      </a>
+      <a href="jaemin.html" class="member-nav-item" data-member="jaemin" data-label="JAEMIN">
+        <div class="member-nav-avatar">JM</div>
+      </a>
+      <a href="chenle.html" class="member-nav-item active" data-member="chenle" data-label="CHENLE">
+        <div class="member-nav-avatar">CL</div>
+      </a>
+      <a href="jisung.html" class="member-nav-item" data-member="jisung" data-label="JISUNG">
+        <div class="member-nav-avatar">JS</div>
+      </a>
+    </nav>
+
+    <div class="member-content">
+      <div class="member-hero">
+        <div class="member-hero-fallback"></div>
+        <img class="member-hero-img" src="assets/img/members/chenle-hero.jpg" alt="chenle">
+        <div class="member-hero-bg"></div>
+        <div class="member-hero-info">
+          <p class="member-tag">NCT DREAM · VOCAL</p>
+          <h1 class="member-name-big">CHENLE</h1>
+          <p class="member-name-kr">종천러</p>
+        </div>
+      </div>
+
+      <div class="member-detail">
+        <div class="profile-grid">
+          <div>
+            <p class="section-label">PROFILE</p>
+            <table class="profile-table">
+              <tr>
+                <td>본명</td>
+                <td>종천러 (钟辰乐)</td>
+              </tr>
+              <tr>
+                <td>생년월일</td>
+                <td>2001년 11월 22일</td>
+              </tr>
+              <tr>
+                <td>출신</td>
+                <td>중국 상하이</td>
+              </tr>
+              <tr>
+                <td>포지션</td>
+                <td>보컬</td>
+              </tr>
+              <tr>
+                <td>특기</td>
+                <td>피아노, 노래</td>
+              </tr>
+              <tr>
+                <td>팬덤명</td>
+                <td>천프</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <hr class="section-divider">
+
+        <div class="history-section">
+          <p class="section-label">HISTORY</p>
+          <div class="history-list">
+            <div class="history-item">
+              <span class="history-year">2016</span>
+              <div class="history-content">
+                <div class="history-title">NCT Dream 데뷔 — Chewing Gum</div>
+                <div class="history-desc">NCT Dream 멤버로 데뷔.</div>
+              </div>
+            </div>
+            <div class="history-item">
+              <span class="history-year">2019</span>
+              <div class="history-content">
+                <div class="history-title">THE DREAM SHOW 단독 콘서트</div>
+                <div class="history-desc">첫 단독 콘서트 참여.</div>
+              </div>
+            </div>
+            <div class="history-item">
+              <span class="history-year">2021</span>
+              <div class="history-content">
+                <div class="history-title">정규 1집 - Hot Sauce</div>
+                <div class="history-desc">데뷔 5년만에 첫 정규앨범 발매. 밀리언셀러 등극.</div>
+              </div>
+            </div>
+            <div class="history-item">
+              <span class="history-year">2024</span>
+              <div class="history-content">
+                <div class="history-title">THE DREAM SHOW3 월드투어</div>
+                <div class="history-desc">고척 스카이돔 포함 아시아·북미 투어 참여.</div>
+              </div>
+            </div>
+            <div class="history-item">
+              <span class="history-year">2025</span>
+              <div class="history-content">
+                <div class="history-title">솔로 싱글 - Lucid</div>
+                <div class="history-desc">Tear bridge, Lucid, Cosmic Joke을 선보이며 자신만의 음악 세계 확장</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr class="section-divider">
+
+        <div>
+          <p class="section-label">SNS</p>
+          <div class="sns-links">
+            <a href="https://www.instagram.com/zhong.chenle/" target="_blank" class="sns-link">
+              <i class="bi bi-instagram"></i> INSTAGRAM
+            </a>
+            <a href="https://weverse.io/nctdream" target="_blank" class="sns-link">
+              <i class="bi bi-broadcast"></i> WEVERSE
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="login-modal">
+    <div class="modal-box">
+      <button class="modal-close" id="login-close-btn">✕</button>
+      <h2 class="modal-title">LOGIN</h2>
+      <p class="modal-subtitle">최애 멤버를 선택하세요</p>
+      <div class="member-grid">
+        <div class="member-card" data-member="renjun" onclick="selectMember(this)">
+          <div class="member-avatar">RJ</div><span class="member-name">RENJUN</span>
+        </div>
+        <div class="member-card" data-member="jeno" onclick="selectMember(this)">
+          <div class="member-avatar">JN</div><span class="member-name">JENO</span>
+        </div>
+        <div class="member-card" data-member="haechan" onclick="selectMember(this)">
+          <div class="member-avatar">HC</div><span class="member-name">HAECHAN</span>
+        </div>
+        <div class="member-card" data-member="jaemin" onclick="selectMember(this)">
+          <div class="member-avatar">JM</div><span class="member-name">JAEMIN</span>
+        </div>
+        <div class="member-card" data-member="chenle" onclick="selectMember(this)">
+          <div class="member-avatar">CL</div><span class="member-name">CHENLE</span>
+        </div>
+        <div class="member-card" data-member="jisung" onclick="selectMember(this)">
+          <div class="member-avatar">JS</div><span class="member-name">JISUNG</span>
+        </div>
+      </div>
+      <button class="modal-confirm" id="modal-confirm-btn">SELECT</button>
+    </div>
+  </div>
+
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const cursor = document.getElementById('cursor');
+    const cursorRing = document.getElementById('cursor-ring');
+    document.addEventListener('mousemove', (e) => {
+      cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px';
+      cursorRing.style.left = e.clientX + 'px'; cursorRing.style.top = e.clientY + 'px';
+    });
+    document.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        if (cursor.style.backgroundImage) {
+          cursor.style.width = '50px';
+          cursor.style.height = '50px';
+        } else {
+          cursor.style.width = '28px';
+          cursor.style.height = '28px';
+          cursorRing.style.width = '55px';
+          cursorRing.style.height = '55px';
+        }
+      });
+      el.addEventListener('mouseleave', () => {
+        if (cursor.style.backgroundImage) {
+          cursor.style.width = '40px';
+          cursor.style.height = '40px';
+        } else {
+          cursor.style.width = '18px';
+          cursor.style.height = '18px';
+          cursorRing.style.width = '40px';
+          cursorRing.style.height = '40px';
+        }
+      });
+    });
+    const modal = document.getElementById('login-modal');
+    document.getElementById('login-open-btn').addEventListener('click', () => {
+      const saved = localStorage.getItem('ncd-member');
+      if (saved) {
+        localStorage.removeItem('ncd-member');
+        const cursor = document.getElementById('cursor');
+        const cursorRing = document.getElementById('cursor-ring');
+        if (cursor) {
+          cursor.style.backgroundImage = '';
+          cursor.style.backgroundColor = 'var(--orange)';
+          cursor.style.borderRadius = '50%';
+          cursor.style.width = '18px';
+          cursor.style.height = '18px';
+        }
+        if (cursorRing) {
+          cursorRing.style.display = 'block';
+          cursorRing.style.width = '40px';
+          cursorRing.style.height = '40px';
+        }
+        document.querySelectorAll('.member-card').forEach(c => c.classList.remove('selected'));
+        updateLoginButtonState();
+        alert('로그아웃되었습니다!');
+      } else {
+        modal.classList.add('open');
+      }
+    });
+    document.getElementById('login-close-btn').addEventListener('click', () => modal.classList.remove('open'));
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
+    let selectedMember = localStorage.getItem('ncd-member') || 'renjun';
+    function selectMember(card) {
+      document.querySelectorAll('.member-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected'); selectedMember = card.dataset.member;
+    }
+    document.getElementById('modal-confirm-btn').addEventListener('click', () => {
+      localStorage.setItem('ncd-member', selectedMember);
+      modal.classList.remove('open');
+      applyCursor(selectedMember);
+      updateLoginButtonState();
+      alert(selectedMember.toUpperCase() + ' 으로 로그인되었습니다!');
+    });
+    function applyCursor(member) {
+      if (member) {
+        const cursor = document.getElementById('cursor');
+        const cursorRing = document.getElementById('cursor-ring');
+        if (cursor) {
+          cursor.style.backgroundImage = `url('assets/img/cursor-${member}.png')`;
+          cursor.style.backgroundSize = 'contain';
+          cursor.style.backgroundPosition = 'center';
+          cursor.style.backgroundRepeat = 'no-repeat';
+          cursor.style.backgroundColor = 'transparent';
+          cursor.style.borderRadius = '0';
+          cursor.style.width = '40px';
+          cursor.style.height = '40px';
+        }
+        if (cursorRing) {
+          cursorRing.style.display = 'none';
+        }
+      }
+    }
+    function updateLoginButtonState() {
+      const loginBtn = document.getElementById('login-open-btn');
+      const saved = localStorage.getItem('ncd-member');
+      if (saved) {
+        loginBtn.innerHTML = '<i class="bi bi-box-arrow-right"></i>';
+      } else {
+        loginBtn.innerHTML = '<i class="bi bi-person"></i>';
+      }
+    }
+    const saved = localStorage.getItem('ncd-member');
+    if (saved) {
+      const card = document.querySelector('[data-member="' + saved + '"]');
+      if (card) selectMember(card);
+      applyCursor(saved);
+    }
+    updateLoginButtonState();
+  </script>
+</body>
+
+</html>
